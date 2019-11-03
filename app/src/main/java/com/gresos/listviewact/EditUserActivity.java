@@ -1,35 +1,46 @@
-package com.gresos.dbsignup;
+package com.gresos.listviewact;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
-public class SignupActivity extends AppCompatActivity {
+public class EditUserActivity extends AppCompatActivity {
 
     EditText etUsername, etPassword, etFullname;
+    DbHelper db;
     String username, password, fullname;
     int formsuccess, userid;
 
-    DbHelper db;
-
+    ArrayList<HashMap<String, String>> select_user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_signup);
+        setContentView(R.layout.activity_edit_user);
 
         db = new DbHelper(this);
 
         etUsername = findViewById(R.id.etUsername);
         etPassword = findViewById(R.id.etPassword);
         etFullname = findViewById(R.id.etFullname);
+
+
+        Intent intent = getIntent();
+        userid = intent.getIntExtra(db.TBL_USER_ID, 0);
+
+        select_user = db.getSelectUser(userid);
+
+        etUsername.setText(select_user.get(0).get(db.TBL_USER_USERNAME));
+        etPassword.setText(select_user.get(0).get(db.TBL_USER_PASSWORD));
+        etFullname.setText(select_user.get(0).get(db.TBL_USER_FULLNAME));
     }
 
     @Override
@@ -39,48 +50,35 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.btnSave:
+
                 formsuccess = 3;
+
                 username = etUsername.getText().toString();
-                password = etPassword.getText().toString();
                 fullname = etFullname.getText().toString();
 
-                // validate username
-                if(username.equals("")) {
+                if (username.equals("")) {
                     etUsername.setError("This field is required");
                     formsuccess--;
                 }
-
-                // validate password
-                if(password.equals("")) {
-                    etPassword.setError("This field is required");
-                    formsuccess--;
-                }
-
-                // validate fullname
-                if(fullname.equals("")) {
+                if (fullname.equals("")) {
                     etFullname.setError("This field is required");
                     formsuccess--;
                 }
 
-                // validate success
-                if(formsuccess == 3) {
+                if(formsuccess == 2) {
                     HashMap<String, String> map_user = new HashMap();
-                    map_user.put(db.TBL_USER_USERNAME, username);
-                    map_user.put(db.TBL_USER_PASSWORD, password);
-                    map_user.put(db.TBL_USER_FULLNAME, fullname);
-                    userid = db.createUser(map_user);
-                    if(userid < 1) {
-                        Toast.makeText(this, "USER SUCCESSFULLY CREATED", Toast.LENGTH_SHORT).show();
-                    }
-                    else {
-                        etUsername.setError("Username already existed");
-                    }
+
+                    map_user.put(db.TBL_USER_ID,String.valueOf(userid));
+                    map_user.put(db.TBL_USER_USERNAME,username);
+                    map_user.put(db.TBL_USER_FULLNAME,fullname);
+
+                    db.updateUser(map_user);
+                    Toast.makeText(this, "Data Successfully Updated", Toast.LENGTH_SHORT).show();
+                    this.finish();
                 }
-
-
                 break;
             case R.id.btnCancel:
                 this.finish();

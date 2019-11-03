@@ -4,11 +4,11 @@
     <item
         android:title="SAVE"
         android:id="@+id/btnSave"
-        android:icon="@mipmap/ic_save"
+        android:icon="@drawable/ic_save"
         app:showAsAction="ifRoom"/>
     <item
         android:title="CANCEL"
         android:id="@+id/btnCancel"
-        android:icon="@mipmap/ic_cancel"
+        android:icon="@drawable/ic_cancel"
         app:showAsAction="ifRoom"/>
 </menu>

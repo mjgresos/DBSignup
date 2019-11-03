@@ -1,4 +1,4 @@
-package com.gresos.dbsignup;
+package com.gresos.listviewact;
 
 import org.junit.Test;
 
